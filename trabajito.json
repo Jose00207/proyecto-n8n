@@ -13,166 +13,312 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -416,
-        496
+        -224,
+        -80
       ],
-      "id": "dca4a448-4ee4-4ee0-8d9a-c56811576d5c",
+      "id": "d745ae51-818d-4d26-aaf6-14fdfbb995bf",
       "name": "Telegram Trigger",
       "webhookId": "1c9f7f8f-c321-4f40-91bc-b05f0097f1e6",
       "notesInFlow": false,
       "alwaysOutputData": false,
+      "retryOnFail": false,
       "credentials": {
         "telegramApi": {
-          "id": "vwAaJ7U22qqN3RGL",
+          "id": "GkaDYkwC4wcznaVw",
           "name": "Telegram account"
         }
       }
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "="
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [
-        -384,
-        -496
-      ],
-      "id": "f85abd33-cfa5-45d7-8026-2a6486ee2b14",
-      "name": "Message a model",
-      "credentials": {
-        "ollamaApi": {
-          "id": "ZWsi2FRZKT06vAJK",
-          "name": "Ollama account"
-        }
-      }
-    },
-    {
-      "parameters": {
+        "operation": "pdf",
         "options": {
-          "allowFileUploads": true
+          "keepSource": "binary"
         }
       },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.3,
-      "position": [
-        -384,
-        64
-      ],
-      "id": "e1eddbda-1578-414e-84f0-5332d4179227",
-      "name": "When chat message received",
-      "webhookId": "e7a0f27b-c9a1-43ef-bfcc-a6f01faecbb0"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{$json[\"message\"][\"text\"]}}\n",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3,
-      "position": [
-        -160,
-        480
-      ],
-      "id": "4555678a-d63e-4f36-af03-6ab9bac5f4ca",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": "=gemma3:4b",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -192,
-        688
+        128,
+        -288
       ],
-      "id": "65085172-7092-4687-afc3-c2f76dd2e9f1",
-      "name": "Ollama Chat Model",
-      "credentials": {
-        "ollamaApi": {
-          "id": "ZWsi2FRZKT06vAJK",
-          "name": "Ollama account"
-        }
-      }
+      "id": "e9346640-2a80-482f-b8ae-357ffbb9b5e8",
+      "name": "Extract from File"
     },
     {
       "parameters": {
-        "mode": "update",
+        "mode": "insert",
         "tableName": {
           "__rl": true,
-          "mode": "id",
-          "value": "documents"
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
         },
-        "id": "int8",
+        "embeddingBatchSize": 768,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        -160,
-        80
+        496,
+        -288
       ],
-      "id": "70525c94-cf59-4784-9ac7-d405c561a1b6",
+      "id": "cc090e02-90e4-48ef-8e50-1ed22074d0de",
       "name": "Supabase Vector Store",
       "credentials": {
         "supabaseApi": {
-          "id": "87Pr8GxwecWXKMeF",
+          "id": "ihs7HfBmP8OIFAdl",
           "name": "Supabase account"
         }
       }
     },
     {
       "parameters": {
-        "model": "gemma3:4b"
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        -160
+      ],
+      "id": "66d49832-4566-486c-8ced-26846e5dfafd",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "752df2b3-edce-4f9d-90b8-e0bfffe1ebd6",
+              "leftValue": "={{ $json.message.document }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -80
+      ],
+      "id": "cf10571d-595f-4c42-8253-15c580773e79",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Eres un experto en la base de datos documental. Tu unica funcion es responder preguntas de los usuarios.\n\nDEBES USAR la herramienta 'obtener informacion' para buscar la información relevante antes de intentar responder. Si la herramienta no devuelve información, indica que \"No puedo encontrar esa información en la base de datos\". No uses tu conocimiento general para responder, intenta no usar markdown para evitar errores, puedes usar html que pueda soportar telegram."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        368,
+        -64
+      ],
+      "id": "9e9b63d3-fe57-4117-bbfb-533a15aa661a",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:1.5b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        -192,
-        256
+        240,
+        112
       ],
-      "id": "849c7c74-4994-4b3e-b84d-392b1cd62bbe",
-      "name": "Embeddings Ollama",
+      "id": "8987931b-6438-4560-a18a-ddb724b10e9a",
+      "name": "Ollama Chat Model",
       "credentials": {
         "ollamaApi": {
-          "id": "ZWsi2FRZKT06vAJK",
+          "id": "GkUDXxR8xNfcVxlt",
           "name": "Ollama account"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{$json[\"message\"][\"chat\"][\"id\"]}}",
-        "text": "={{$json[\"response\"]}}",
-        "additionalFields": {}
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        336
+      ],
+      "id": "5de5d1be-8687-4c79-9bdb-f00db4ed4e40",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ihs7HfBmP8OIFAdl",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        16,
+        192
+      ],
+      "id": "610b9727-0d60-430c-9feb-ab564799b1ae",
+      "name": "Embeddings Google Gemini3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yXE7pb4Hr4YCTTWI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "usa esta base de datos para responder preguntas del usuario"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        192
+      ],
+      "id": "6b60ca3d-3021-44da-90d8-4f66eb698cd2",
+      "name": "obtener informacion"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        368,
+        112
+      ],
+      "id": "15930f4c-cdf9-4772-9e75-e32ae7bab8bc",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yXE7pb4Hr4YCTTWI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        288
+      ],
+      "id": "a7821ef6-7ccc-4b8a-b4f4-5806e866215e",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yXE7pb4Hr4YCTTWI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:1.5b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        704,
+        432
+      ],
+      "id": "0290f249-ca37-4f00-bdd8-42c81d73ca30",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "GkUDXxR8xNfcVxlt",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').all()[0].json.message.chat.id}}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        192,
-        480
+        768,
+        -64
       ],
-      "id": "aebf94fd-f625-4e2e-8c04-a00787b4cc15",
+      "id": "07a7f1b2-1d7e-4c92-93b0-96fef3a744c5",
       "name": "Send a text message",
-      "webhookId": "10a91d40-e0d6-4fb7-930c-6872e75bb975",
+      "webhookId": "624e3bba-e9ee-4011-9825-808f8ce292f3",
       "credentials": {
         "telegramApi": {
-          "id": "vwAaJ7U22qqN3RGL",
+          "id": "GkaDYkwC4wcznaVw",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').all()[0].json.message.chat.id}}",
+        "text": "=Sorry, i have a problem with you request.",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        944,
+        80
+      ],
+      "id": "c3889a07-9072-44ab-b22b-0021476320e2",
+      "name": "Send a text message1",
+      "webhookId": "624e3bba-e9ee-4011-9825-808f8ce292f3",
+      "credentials": {
+        "telegramApi": {
+          "id": "GkaDYkwC4wcznaVw",
           "name": "Telegram account"
         }
       }
@@ -184,14 +330,14 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "When chat message received": {
+    "Extract from File": {
       "main": [
         [
           {
@@ -202,20 +348,64 @@
         ]
       ]
     },
-    "Ollama Chat Model": {
-      "ai_languageModel": [
+    "Supabase Vector Store": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
             "index": 0
           }
         ]
       ]
     },
-    "Embeddings Ollama": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "obtener informacion",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini3": {
       "ai_embedding": [
         [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          },
           {
             "node": "Supabase Vector Store",
             "type": "ai_embedding",
@@ -234,17 +424,65 @@
           }
         ]
       ]
+    },
+    "obtener informacion": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "obtener informacion",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
   },
-  "versionId": "dcd458bc-4c08-4c6b-94ce-9d1a28347265",
+  "versionId": "ce0b0247-017f-462b-a721-3a8a53232511",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "70ecafc7b64cc9124179cab4ffb5304848a103e5d4ae57aa2277a1a0e697e007"
+    "instanceId": "38e876fba3ae9f6d31874b0a5184a5eeb3d192be48df568a29be4064ece9a7ab"
   },
-  "id": "2fG7o3m4emchBCRG",
+  "id": "CSJXS0WrvCvtX5iq",
   "tags": []
 }
